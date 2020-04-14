@@ -47,8 +47,7 @@ def lambda_handler(event, context):
         service_id, day_of_service, service_started, server, table_id = receipt[1][0:5]
         
         items = {}
-        for i in range(1,len(receipt)):
-            #items[description] = [quantity, amount, item_id]
+        for i in range(len(receipt)):
             items[receipt[i][5]] = {"maxNumber": receipt[i][6], "cost": float(receipt[i][7])}
             
         #print("Items:")
@@ -61,7 +60,6 @@ def lambda_handler(event, context):
         #Checking if the items are part of the receipt
         new_items = data["items"]
         for item in new_items.keys():
-            
             #print(item)
             #print(item not in items.keys())
             #print(new_items[item]['number'] > items[item]['maxNumber'])
@@ -70,7 +68,6 @@ def lambda_handler(event, context):
             #print(new_items[item]['cost'] != items[item]['cost'])
             #print(type(new_items[item]['cost']))
             if ((item not in items.keys()) or (new_items[item]['number'] > items[item]['maxNumber']) or (new_items[item]['number'] < 0) or (new_items[item]['maxNumber'] != items[item]['maxNumber']) or (new_items[item]['cost'] != items[item]['cost'])):
-            
                 return {
                    'statusCode': 500,
                    'headers': {
@@ -99,8 +96,8 @@ def lambda_handler(event, context):
         tax_obj = {"amount": "{:.2f}".format(tax_amount), "description": tax_description, "rate": str(int(tax_rate*100))+"%"}
 
 	# enter tip stuff
-        tip_amount = data["tipPercent"] * post_tax_total
-        tip_desc = "Tip - " + str(int(data["tipPercent"]*100)) + " percent"
+        tip_amount = data["tipPercent"]/100 * post_tax_total
+        tip_desc = "Tip - " + str(data["tipPercent"]) + " percent"
         item_list.append(item_to_dict(tip_desc, "", 1, tip_amount))
 
         shopping_cart = {"items": item_list, \
