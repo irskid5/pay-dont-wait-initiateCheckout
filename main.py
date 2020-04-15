@@ -20,8 +20,8 @@ def item_to_dict(description, product_code, quantity, unit_cost):
 
 def lambda_handler(event, context):
     # TODO implement
-    print("Event:")
-    print(event)
+    #print("Event:")
+    #print(event)
     try:
     
         #import body json
@@ -98,7 +98,8 @@ def lambda_handler(event, context):
 	# enter tip stuff
         tip_amount = data["tipPercent"]/100 * post_tax_total
         tip_desc = "Tip - " + str(data["tipPercent"]) + " percent"
-        item_list.append(item_to_dict(tip_desc, "", 1, tip_amount))
+        tip_code = "tip"
+        item_list.append(item_to_dict(tip_desc, tip_code, 1, tip_amount))
 
         shopping_cart = {"items": item_list, \
                          "subtotal": "{:.2f}".format(sub_total), \
@@ -135,7 +136,8 @@ def lambda_handler(event, context):
                 },
                 'body': json.dumps({"success": True, "ticket": rData["response"]["ticket"]})
             }
-
+        else:
+            print(rData["response"]["error"])
         return {
             'statusCode': 200,
             'headers': {
